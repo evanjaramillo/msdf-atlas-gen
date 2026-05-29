@@ -32,8 +32,8 @@ public:
 
     FontGeometry();
     explicit FontGeometry(const std::vector<GlyphGeometry>& glyphStorage);
-    FontGeometry(FontGeometry &&orig);
-    FontGeometry &operator=(FontGeometry &&orig);
+    FontGeometry(FontGeometry &&orig) noexcept;
+    FontGeometry &operator=(FontGeometry &&orig) noexcept;
 
     /// Loads the consecutive range of glyphs between rangeStart (inclusive) and rangeEnd (exclusive), returns the number of successfully loaded glyphs
     int loadGlyphRange(msdfgen::FontHandle *font, double fontScale, unsigned rangeStart, unsigned rangeEnd, bool preprocessGeometry = true, bool enableKerning = true);
@@ -81,10 +81,6 @@ private:
     std::map<unicode_t, size_t> glyphsByCodepoint;
     std::map<std::pair<int, int>, double> kerning;
     std::string name;
-
-    FontGeometry(const FontGeometry &);
-    FontGeometry &operator=(const FontGeometry &);
-
 };
 
 }
