@@ -2,6 +2,7 @@
     "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/master/docs/vcpkg.schema.json",
     "name": "msdf-atlas-gen",
     "version": "1.4.0",
+    "port-version": 1,
     "description": "Multi-channel signed distance field atlas generator",
     "homepage": "https://github.com/Chlumsky/msdf-atlas-gen",
     "license": "MIT",
