@@ -1,7 +1,7 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
-    REPO Chlumsky/msdf-atlas-gen
-    REF 2ede254314a2512252a225fa6c975948d6af559a
+    REPO evanjaramillo/msdf-atlas-gen
+    REF e2537489eceda5a0e02b71f63c7016ce45cf6a9f
     SHA512 c6e78ee2689eeb72dff38e4482c0ee360d0a7125d8cb210314adee8f10fd85476a4469d6e78637b9cc213f8b96afbdf13d38673125b702abc71fdf2c200ab57f
     HEAD_REF master
 )
