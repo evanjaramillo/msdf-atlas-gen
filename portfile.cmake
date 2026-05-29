@@ -1,3 +1,7 @@
+vcpkg_find_acquire_program(GIT)
+get_filename_component(GIT_EXE_PATH ${GIT} DIRECTORY)
+set(ENV{PATH} "${GIT_EXE_PATH};$ENV{PATH}")
+
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO Chlumsky/msdf-atlas-gen
@@ -5,6 +9,14 @@ vcpkg_from_github(
     SHA512 d992258037d113fd3f44b1f5b6511993900b9572c3701aade1ad9af0e9bd7a7939f77f0c7e8a730111eaacbdd5425d5e241ad3f52129bf6639a0b128db895781
     HEAD_REF master
 )
+
+message(STATUS "Fetching msdf-atlas-gen submodules...")
+execute_process(
+        COMMAND ${GIT} submodule update --init --recursive
+        WORKING_DIRECTORY "${SOURCE_PATH}"
+        RESULT_VARIABLE submodule_error
+)
+
 vcpkg_cmake_configure(
   SOURCE_PATH ${SOURCE_PATH}
   OPTIONS
