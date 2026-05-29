@@ -9,7 +9,8 @@
         "freetype",
         "libpng",
 	"vcpkg-cmake-config",
-        "vcpkg-cmake"
+        "vcpkg-cmake",
+        "msdfgen"
     ],
     "default-features": [
         "geometry-preprocessing"
