@@ -1168,7 +1168,7 @@ int main(int argc, const char *const *argv) {
                 charset = Charset::ASCII;
 
             // Load glyphs
-            FontGeometry fontGeometry(&glyphs);
+            FontGeometry fontGeometry(glyphs);
             int glyphsLoaded = -1;
             switch (fontInput.glyphIdentifierType) {
                 case GlyphIdentifierType::GLYPH_INDEX:

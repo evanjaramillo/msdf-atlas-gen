@@ -7,57 +7,55 @@ namespace msdf_atlas {
 
 FontGeometry::GlyphRange::GlyphRange() : glyphs(), rangeStart(), rangeEnd() { }
 
-FontGeometry::GlyphRange::GlyphRange(const std::vector<GlyphGeometry> *glyphs, size_t rangeStart, size_t rangeEnd) : glyphs(glyphs), rangeStart(rangeStart), rangeEnd(rangeEnd) { }
+FontGeometry::GlyphRange::GlyphRange(const std::vector<GlyphGeometry>& glyphs, size_t rangeStart, size_t rangeEnd) : glyphs(glyphs), rangeStart(rangeStart), rangeEnd(rangeEnd) { }
 
 size_t FontGeometry::GlyphRange::size() const {
-    return glyphs->size();
+    return glyphs.size();
 }
 
 bool FontGeometry::GlyphRange::empty() const {
-    return glyphs->empty();
+    return glyphs.empty();
 }
 
 const GlyphGeometry *FontGeometry::GlyphRange::begin() const {
-    return glyphs->data()+rangeStart;
+    return glyphs.data()+rangeStart;
 }
 
 const GlyphGeometry *FontGeometry::GlyphRange::end() const {
-    return glyphs->data()+rangeEnd;
+    return glyphs.data()+rangeEnd;
 }
 
-FontGeometry::FontGeometry() : geometryScale(1), metrics(), preferredIdentifierType(GlyphIdentifierType::UNICODE_CODEPOINT), glyphs(&ownGlyphs), rangeStart(0), rangeEnd(0) { }
+FontGeometry::FontGeometry() : geometryScale(1), metrics(), preferredIdentifierType(GlyphIdentifierType::UNICODE_CODEPOINT), rangeStart(0), rangeEnd(0) { }
 
-FontGeometry::FontGeometry(std::vector<GlyphGeometry> *glyphStorage) : geometryScale(1), metrics(), preferredIdentifierType(GlyphIdentifierType::UNICODE_CODEPOINT) {
-    glyphs = glyphStorage ? glyphStorage : &ownGlyphs;
-    rangeStart = glyphs->size();
-    rangeEnd = glyphs->size();
+FontGeometry::FontGeometry(const std::vector<GlyphGeometry>& glyphStorage) : geometryScale(1), metrics(), preferredIdentifierType(GlyphIdentifierType::UNICODE_CODEPOINT) {
+    glyphs = glyphStorage;
+    rangeStart = glyphs.size();
+    rangeEnd = glyphs.size();
 }
 
-FontGeometry::FontGeometry(FontGeometry &&orig) : geometryScale(orig.geometryScale), metrics(orig.metrics), preferredIdentifierType(orig.preferredIdentifierType), glyphs(orig.glyphs), rangeStart(orig.rangeStart), rangeEnd(orig.rangeEnd), glyphsByIndex((std::map<int, size_t> &&) orig.glyphsByIndex), glyphsByCodepoint((std::map<unicode_t, size_t> &&) orig.glyphsByCodepoint), kerning((std::map<std::pair<int, int>, double> &&) orig.kerning), ownGlyphs((std::vector<GlyphGeometry> &&) orig.ownGlyphs), name((std::string &&) orig.name) {
-    if (glyphs == &orig.ownGlyphs)
-        glyphs = &ownGlyphs;
+FontGeometry::FontGeometry(FontGeometry &&orig) : geometryScale(orig.geometryScale), metrics(orig.metrics), preferredIdentifierType(orig.preferredIdentifierType), glyphs(orig.glyphs), rangeStart(orig.rangeStart), rangeEnd(orig.rangeEnd), glyphsByIndex((std::map<int, size_t> &&) orig.glyphsByIndex), glyphsByCodepoint((std::map<unicode_t, size_t> &&) orig.glyphsByCodepoint), kerning((std::map<std::pair<int, int>, double> &&) orig.kerning), name((std::string &&) orig.name) {
+    glyphs = orig.glyphs;
 }
 
 FontGeometry &FontGeometry::operator=(FontGeometry &&orig) {
     if (this != &orig) {
         geometryScale = orig.geometryScale;
         metrics = orig.metrics;
-        glyphs = orig.glyphs == &orig.ownGlyphs ? &ownGlyphs : orig.glyphs;
+        glyphs = orig.glyphs;
         rangeStart = orig.rangeStart;
         rangeEnd = orig.rangeEnd;
         glyphsByIndex = (std::map<int, size_t> &&) orig.glyphsByIndex;
         glyphsByCodepoint = (std::map<unicode_t, size_t> &&) orig.glyphsByCodepoint;
         kerning = (std::map<std::pair<int, int>, double> &&) orig.kerning;
-        ownGlyphs = (std::vector<GlyphGeometry> &&) orig.ownGlyphs;
         name = (std::string &&) orig.name;
     }
     return *this;
 }
 
 int FontGeometry::loadGlyphRange(msdfgen::FontHandle *font, double fontScale, unsigned rangeStart, unsigned rangeEnd, bool preprocessGeometry, bool enableKerning) {
-    if (!(glyphs->size() == this->rangeEnd && loadMetrics(font, fontScale)))
+    if (!(glyphs.size() == this->rangeEnd && loadMetrics(font, fontScale)))
         return -1;
-    glyphs->reserve(glyphs->size()+(rangeEnd-rangeStart));
+    glyphs.reserve(glyphs.size()+(rangeEnd-rangeStart));
     int loaded = 0;
     for (unsigned index = rangeStart; index < rangeEnd; ++index) {
         GlyphGeometry glyph;
@@ -73,9 +71,9 @@ int FontGeometry::loadGlyphRange(msdfgen::FontHandle *font, double fontScale, un
 }
 
 int FontGeometry::loadGlyphset(msdfgen::FontHandle *font, double fontScale, const Charset &glyphset, bool preprocessGeometry, bool enableKerning) {
-    if (!(glyphs->size() == rangeEnd && loadMetrics(font, fontScale)))
+    if (!(glyphs.size() == rangeEnd && loadMetrics(font, fontScale)))
         return -1;
-    glyphs->reserve(glyphs->size()+glyphset.size());
+    glyphs.reserve(glyphs.size()+glyphset.size());
     int loaded = 0;
     for (unicode_t index : glyphset) {
         GlyphGeometry glyph;
@@ -91,9 +89,9 @@ int FontGeometry::loadGlyphset(msdfgen::FontHandle *font, double fontScale, cons
 }
 
 int FontGeometry::loadCharset(msdfgen::FontHandle *font, double fontScale, const Charset &charset, bool preprocessGeometry, bool enableKerning) {
-    if (!(glyphs->size() == rangeEnd && loadMetrics(font, fontScale)))
+    if (!(glyphs.size() == rangeEnd && loadMetrics(font, fontScale)))
         return -1;
-    glyphs->reserve(glyphs->size()+charset.size());
+    glyphs.reserve(glyphs.size()+charset.size());
     int loaded = 0;
     for (unicode_t cp : charset) {
         GlyphGeometry glyph;
@@ -124,23 +122,23 @@ bool FontGeometry::loadMetrics(msdfgen::FontHandle *font, double fontScale) {
 }
 
 bool FontGeometry::addGlyph(const GlyphGeometry &glyph) {
-    if (glyphs->size() != rangeEnd)
+    if (glyphs.size() != rangeEnd)
         return false;
     glyphsByIndex.insert(std::make_pair(glyph.getIndex(), rangeEnd));
     if (glyph.getCodepoint())
         glyphsByCodepoint.insert(std::make_pair(glyph.getCodepoint(), rangeEnd));
-    glyphs->push_back(glyph);
+    glyphs.push_back(glyph);
     ++rangeEnd;
     return true;
 }
 
 bool FontGeometry::addGlyph(GlyphGeometry &&glyph) {
-    if (glyphs->size() != rangeEnd)
+    if (glyphs.size() != rangeEnd)
         return false;
     glyphsByIndex.insert(std::make_pair(glyph.getIndex(), rangeEnd));
     if (glyph.getCodepoint())
         glyphsByCodepoint.insert(std::make_pair(glyph.getCodepoint(), rangeEnd));
-    glyphs->push_back((GlyphGeometry &&) glyph);
+    glyphs.push_back((GlyphGeometry &&) glyph);
     ++rangeEnd;
     return true;
 }
@@ -150,8 +148,8 @@ int FontGeometry::loadKerning(msdfgen::FontHandle *font) {
     for (size_t i = rangeStart; i < rangeEnd; ++i)
         for (size_t j = rangeStart; j < rangeEnd; ++j) {
             double advance;
-            if (msdfgen::getKerning(advance, font, (*glyphs)[i].getGlyphIndex(), (*glyphs)[j].getGlyphIndex(), msdfgen::FONT_SCALING_NONE) && advance) {
-                kerning[std::make_pair<int, int>((*glyphs)[i].getIndex(), (*glyphs)[j].getIndex())] = geometryScale*advance;
+            if (msdfgen::getKerning(advance, font, (glyphs)[i].getGlyphIndex(), (glyphs)[j].getGlyphIndex(), msdfgen::FONT_SCALING_NONE) && advance) {
+                kerning[std::make_pair<int, int>((glyphs)[i].getIndex(), (glyphs)[j].getIndex())] = geometryScale*advance;
                 ++loaded;
             }
         }
@@ -184,14 +182,14 @@ FontGeometry::GlyphRange FontGeometry::getGlyphs() const {
 const GlyphGeometry *FontGeometry::getGlyph(msdfgen::GlyphIndex index) const {
     std::map<int, size_t>::const_iterator it = glyphsByIndex.find(index.getIndex());
     if (it != glyphsByIndex.end())
-        return &(*glyphs)[it->second];
+        return &(glyphs)[it->second];
     return nullptr;
 }
 
 const GlyphGeometry *FontGeometry::getGlyph(unicode_t codepoint) const {
     std::map<unicode_t, size_t>::const_iterator it = glyphsByCodepoint.find(codepoint);
     if (it != glyphsByCodepoint.end())
-        return &(*glyphs)[it->second];
+        return &(glyphs)[it->second];
     return nullptr;
 }
 

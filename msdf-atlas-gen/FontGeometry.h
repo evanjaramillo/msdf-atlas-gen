@@ -20,18 +20,18 @@ public:
     class GlyphRange {
     public:
         GlyphRange();
-        GlyphRange(const std::vector<GlyphGeometry> *glyphs, size_t rangeStart, size_t rangeEnd);
+        GlyphRange(const std::vector<GlyphGeometry>& glyphs, size_t rangeStart, size_t rangeEnd);
         size_t size() const;
         bool empty() const;
         const GlyphGeometry *begin() const;
         const GlyphGeometry *end() const;
     private:
-        const std::vector<GlyphGeometry> *glyphs;
+        std::vector<GlyphGeometry> glyphs;
         size_t rangeStart, rangeEnd;
     };
 
     FontGeometry();
-    explicit FontGeometry(std::vector<GlyphGeometry> *glyphStorage);
+    explicit FontGeometry(const std::vector<GlyphGeometry>& glyphStorage);
     FontGeometry(FontGeometry &&orig);
     FontGeometry &operator=(FontGeometry &&orig);
 
@@ -75,12 +75,11 @@ private:
     double geometryScale;
     msdfgen::FontMetrics metrics;
     GlyphIdentifierType preferredIdentifierType;
-    std::vector<GlyphGeometry> *glyphs;
+    std::vector<GlyphGeometry> glyphs;
     size_t rangeStart, rangeEnd;
     std::map<int, size_t> glyphsByIndex;
     std::map<unicode_t, size_t> glyphsByCodepoint;
     std::map<std::pair<int, int>, double> kerning;
-    std::vector<GlyphGeometry> ownGlyphs;
     std::string name;
 
     FontGeometry(const FontGeometry &);
